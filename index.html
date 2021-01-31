@@ -11,10 +11,12 @@
         </div>
         <div class='rbm bd'>
             <span class='blk'>Your text here <span class='tip'>Shift+Q to focus</span></span>
-            <input id='main'></input>
-            <div class='printer hidden'>
-                <span class='blk'>Printer goes BRRRR</span>
-                <div id='printhere'></div>
+            <input id='main'></input><button>go BRRR</button>
+            <div class='printer'>
+                <span class='blk'>Printer goes BRRR</span>
+                <div id='printhere'>
+
+                </div>
             </div>
         </div>
         <div class='toolbar rbm'>
@@ -27,10 +29,24 @@
             <span class='brrrr'></span>
 
         </div>
+        <div class='footer'>
+            <span class='tip'>C to change color</span>
+            <span class='tip'>Shift+Space to unfocus</span>
+        </div>
     </div>
 </body>
 
 <style>
+
+    .footer {
+        position: fixed;
+        bottom: 0px;
+        width: 100vw;
+        padding: 5px;
+        height: 50px;
+        box-sizing: border-box;
+        border-top: 1px solid lightgray;
+    }
 
     #settings {
         width: 100vw;
@@ -42,7 +58,7 @@
 
     .toolbar {
         position: fixed;
-        height: calc(100vh - 50px);
+        height: calc(100vh - 100px);
         right: 0px;
         top: 50px;
         background-color: white;
@@ -65,6 +81,7 @@
 
     span.tip::before {
         font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f11c";
+        margin-right: 3px;
     }
 
     .pressme {
@@ -130,21 +147,38 @@
 
     .brrrr:nth-child(5)
     {
-        
+
     }
+
+    button {
+        border: 1px solid black;
+        padding: 5px;
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+
+    input {
+        border: 1px solid black;
+        padding: 5px;
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+
 </style>
 
 <script>
 
     var brrDoer = null;
     var toPrint = null;
+    var color = 'black';
 
-    let keyhandler = new Quickeys();
+    let keyhandler = new Quickeys('end');
     keyhandler.register(['shift', 'q'], focusInput, true);
     keyhandler.register(['t'], openSettings);
     keyhandler.register(['enter'], doPrinter);
-    //keyhandler.bake();
-
+    document.querySelector('#main + button').onclick = ()=>{doPrinter(false)};
+    keyhandler.register(['c'], colorize);
+    keyhandler.register(['shift', 'space'], blur, true);
     function focusInput() {
         if (anyInputOn())
             return;
@@ -154,8 +188,19 @@
         }
     }
 
-    function doPrinter() {
-        if (!anyInputOn())
+    function colorize() {
+        if (anyInputOn())
+            return;
+        let c = Math.floor(Math.random()*16777215).toString(16);
+        color='#'+c;
+    }
+
+    function blur() {
+        document.querySelector('input:focus').blur();
+    }
+
+    function doPrinter(checkInput = true) {
+        if (checkInput&&!anyInputOn())
             return;
 
         let printer = document.querySelector('.printer')
@@ -176,6 +221,7 @@
     function print() {
         let newNode = document.querySelector('.tmplt .brrrr').cloneNode();
         newNode.innerHTML = toPrint;
+        newNode.setAttribute('style', 'color: '+color);
         if (document.querySelector('#printhere').childElementCount >= 5) {
             document.querySelector('#printhere').lastChild.remove();
         }

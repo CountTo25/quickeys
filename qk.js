@@ -1,16 +1,7 @@
 class Quickeys
 {
 
-    constructor(bakeAt = 'register') {
-        if (bakeAt == 'register')
-            this.handleAtRegister = true;
-        else if (bakeAt == 'end')
-            this.handleAtRegister = false;
-
-        if (this.handleAtRegister == undefined) {
-            throw 'bakeAt accepts either "register" or "end"';
-        }
-
+    constructor() {
         this.bundle = [];
     }
 
@@ -26,42 +17,14 @@ class Quickeys
 
         this.bundle.push(qkd);
 
-        if (this.handleAtRegister)
-        {
-            document.addEventListener('keydown', function(e) {
-                qkd.fireKey(e.keyCode, e);
-            });
-
-            document.addEventListener('keyup', function(e) {
-                qkd.handleUnpress(e.keyCode, e);
-            })
-            return this;
-        }
-
-
-
-        return this;
-    }
-
-
-
-    bake() //bakes everything to events in one go instead of 9001 events
-    {
-        let bundle = this.bundle;
         document.addEventListener('keydown', function(e) {
-            console.log('applied');
-            bundle.forEach((qkd) => {
-                qkd.fireKey(e.keyCode);
-            });
-            e.preventDefault();
+            qkd.fireKey(e.keyCode, e);
         });
 
-        document.addEventListener('keyup', function (e) {
-            bundle.forEach((qkd) => {
-                qkd.handleUnpress(e.keyCode);
-            });
+        document.addEventListener('keyup', function(e) {
+            qkd.handleUnpress(e.keyCode, e);
         })
-
+        return this;
     }
 
     getLastHotkey() {
