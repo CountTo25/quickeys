@@ -1,7 +1,7 @@
 class Quickeys
 {
 
-    constructor(bakeAt = 'end') {
+    constructor(bakeAt = 'register') {
         if (bakeAt == 'register')
             this.handleAtRegister = true;
         else if (bakeAt == 'end')
@@ -14,7 +14,7 @@ class Quickeys
         this.bundle = [];
     }
 
-    register(keys, event)
+    register(keys, event, prevent=false)
     {
         let keyCodes = [];
 
@@ -22,47 +22,50 @@ class Quickeys
             keyCodes.push(this.findInMap(key));
         });
 
-        let qkd = new QKeyData(keyCodes, event);
+        let qkd = new QKeyData(keyCodes, event, keys, prevent);
 
+        this.bundle.push(qkd);
 
         if (this.handleAtRegister)
         {
             document.addEventListener('keydown', function(e) {
-                qkd.fireKey(e.keyCode);
+                qkd.fireKey(e.keyCode, e);
             });
+
+            document.addEventListener('keyup', function(e) {
+                qkd.handleUnpress(e.keyCode, e);
+            })
             return this;
         }
 
 
-        this.bundle.push(qkd);
 
         return this;
     }
 
 
 
-    bake() //bakes everything to event in one go instead of 9001 events
+    bake() //bakes everything to events in one go instead of 9001 events
     {
         let bundle = this.bundle;
         document.addEventListener('keydown', function(e) {
+            console.log('applied');
             bundle.forEach((qkd) => {
                 qkd.fireKey(e.keyCode);
-            })
+            });
+            e.preventDefault();
         });
+
+        document.addEventListener('keyup', function (e) {
+            bundle.forEach((qkd) => {
+                qkd.handleUnpress(e.keyCode);
+            });
+        })
 
     }
 
-    apply(combo) {
-        document.addEventListener('keydown', function(e) {
-            let fired = [];
-            keys.forEach((kc) => {
-                if (e.keyCode == kc)
-                    fired.push(kc);
-            });
-            if (keys.length == fired.length) {
-                event();
-            }
-        });
+    getLastHotkey() {
+        return this.bundle[this.bundle.length-1];
     }
 
     getKeyCode(key)
@@ -347,22 +350,34 @@ class Quickeys
 }
 
 class QKeyData {
-    constructor(keys, event) {
+    constructor(keys, event, keycombo, prevent = false) {
         this.keys = keys;
         this.event = event;
+        if (keycombo) {
+            this.keycombo = keycombo.join(' + ').toUpperCase();
+        }
+        this.prevent = prevent;
         this.successStack = [];
     }
 
-    fireKey(keyCode) {
+    fireKey(keyCode, event) {
         let l = this.successStack.length;
-        if (this.keys[l] == keyCode) {
+        if (this.keys.includes(keyCode) && !this.successStack.includes(keyCode)) {
             this.successStack.push(keyCode);
             if ((l+1) === this.keys.length) {
+                if (this.prevent)
+                    event.preventDefault();
                 this.event();
                 this.successStack = [];
             }
             return;
         }
         this.successStack = [];
+    }
+
+    handleUnpress(keyCode, event) {
+        if (this.keys.includes(keyCode)) {
+            this.successStack = [];
+        }
     }
 }

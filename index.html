@@ -1,25 +1,195 @@
 <header>
     <script src='qk.js'></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300&family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/1bc8ccb35e.js" crossorigin="anonymous"></script>
 </header>
+<body>
+    <div>
+        <div class='rbt hd'>
+            This is crappy demo that noone will see since i made this plugin for myself
+        </div>
+        <div class='rbm bd'>
+            <span class='blk'>Your text here <span class='tip'>Shift+Q to focus</span></span>
+            <input id='main'></input>
+            <div class='printer hidden'>
+                <span class='blk'>Printer goes BRRRR</span>
+                <div id='printhere'></div>
+            </div>
+        </div>
+        <div class='toolbar rbm'>
+            <span class='blk'>Settings</span><span class='tip blk'>T</span>
+            <div id='settings' class='hidden'>
+                Blah blah blah
+            </div>
+        </div>
+        <div class='tmplt' style='display: none'>
+            <span class='brrrr'></span>
 
-<div>
-    <span id='testing'>
-        lul;
-    </span>
-</div>
+        </div>
+    </div>
+</body>
 
-<script>
-    let keyhandler = new Quickeys('end');
-    keyhandler.register(['a'], changeTesting);
-    keyhandler.register(['q','w'], combo);
-    keyhandler.register(['left'], ()=>{console.log('sup')});
-    keyhandler.bake();
+<style>
 
-    function changeTesting() {
-        document.querySelector('#testing').innerHTML='kek';
+    #settings {
+        width: 100vw;
+        z-index: 2;
+        padding-left: 10px;
+        padding-top: 10px;
+        padding-bottom: 10px;
     }
 
-    function combo() {
-        document.querySelector('#testing').innerHTML='co- co- co- combo';
+    .toolbar {
+        position: fixed;
+        height: calc(100vh - 50px);
+        right: 0px;
+        top: 50px;
+        background-color: white;
+        padding: 5px;
+        border-left: 1px solid lightgray;
+        transition: 0.3s all;
+        max-width: 100px;
+        box-sizing: border-box;
+    }
+
+    .blk {
+        display: block;
+    }
+
+    span.tip {
+        color: grey;
+        margin-left: 5px;
+        font-size: 14px;
+    }
+
+    span.tip::before {
+        font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f11c";
+    }
+
+    .pressme {
+        padding-bottom: 2px;
+        color: lightgray;
+        font-size: 18px;
+        transition: 0.1s all;
+        display: block;
+        padding-left: 20px;
+    }
+
+    .bd .pressme:first-of-type {
+        color: green;
+        font-size: 32px;
+    }
+
+    .rbm {
+        font-family: 'Roboto Mono', monospace;
+    }
+
+    .rbt {
+        font-family: 'Roboto', sans-serif;
+    }
+
+
+    .bd {
+        padding: 10px;
+        margin-top: 50px;
+    }
+
+    .hd {
+        position: fixed;
+        top: 0px;
+        padding: 5px;
+        border-bottom: 1px solid lightgray;
+        color: gray;
+        width: 100vw;
+        height: 50px;
+        box-sizing: border-box;
+    }
+
+    body {
+        padding: 0px;
+        margin: 0px;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .expanded {
+        max-width: 100vw;
+    }
+
+    .brrrr {
+        display: block;
+    }
+
+
+    .brrrr:first-of-type {
+
+    }
+
+    .brrrr:nth-child(5)
+    {
+        
+    }
+</style>
+
+<script>
+
+    var brrDoer = null;
+    var toPrint = null;
+
+    let keyhandler = new Quickeys();
+    keyhandler.register(['shift', 'q'], focusInput, true);
+    keyhandler.register(['t'], openSettings);
+    keyhandler.register(['enter'], doPrinter);
+    //keyhandler.bake();
+
+    function focusInput() {
+        if (anyInputOn())
+            return;
+        if (document.querySelector('input#main') != document.activeElement)
+        {
+            document.querySelector('input#main').focus();
+        }
+    }
+
+    function doPrinter() {
+        if (!anyInputOn())
+            return;
+
+        let printer = document.querySelector('.printer')
+        printer.classList.remove('hidden');
+
+        toPrint = document.querySelector('#main').value;
+
+        if (brrDoer === null)
+        {
+            brrDoer = setInterval(print, 250);
+        } else {
+            clearInterval(brrDoer);
+            brrDoer = setInterval(print, 250);
+        }
+
+    }
+
+    function print() {
+        let newNode = document.querySelector('.tmplt .brrrr').cloneNode();
+        newNode.innerHTML = toPrint;
+        if (document.querySelector('#printhere').childElementCount >= 5) {
+            document.querySelector('#printhere').lastChild.remove();
+        }
+        document.querySelector('#printhere').prepend(newNode);
+    }
+
+    function openSettings() {
+        if (anyInputOn())
+            return;
+        document.querySelector('#settings').classList.toggle('hidden');
+        document.querySelector('.toolbar').classList.toggle('expanded');
+    }
+
+    function anyInputOn() {
+        return document.querySelector('input:focus') != null;
     }
 </script>
