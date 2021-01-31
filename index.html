@@ -1,0 +1,25 @@
+<header>
+    <script src='qk.js'></script>
+</header>
+
+<div>
+    <span id='testing'>
+        lul;
+    </span>
+</div>
+
+<script>
+    let keyhandler = new Quickeys('end');
+    keyhandler.register(['a'], changeTesting);
+    keyhandler.register(['q','w'], combo);
+    keyhandler.register(['left'], ()=>{console.log('sup')});
+    keyhandler.bake();
+
+    function changeTesting() {
+        document.querySelector('#testing').innerHTML='kek';
+    }
+
+    function combo() {
+        document.querySelector('#testing').innerHTML='co- co- co- combo';
+    }
+</script>
