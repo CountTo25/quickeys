@@ -176,9 +176,11 @@
     keyhandler.register(['shift', 'q'], focusInput, true);
     keyhandler.register(['t'], openSettings);
     keyhandler.register(['enter'], doPrinter);
-    document.querySelector('#main + button').onclick = ()=>{doPrinter(false)};
     keyhandler.register(['c'], colorize);
     keyhandler.register(['shift', 'space'], blur, true);
+
+    document.querySelector('#main + button').onclick = ()=>{doPrinter(false)};
+    
     function focusInput() {
         if (anyInputOn())
             return;
@@ -186,6 +188,10 @@
         {
             document.querySelector('input#main').focus();
         }
+    }
+
+    function prevented() {
+        console.log('saved');
     }
 
     function colorize() {
