@@ -31,11 +31,6 @@ class Quickeys
         return this.bundle[this.bundle.length-1];
     }
 
-    getKeyCode(key)
-    {
-        return key.charCodeAt(0);
-    }
-
 
     finish() //Call this with callback if you wanna execute something exactly when set up is done
     {
